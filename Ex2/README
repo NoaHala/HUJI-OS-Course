@@ -1,0 +1,78 @@
+noahalaly
+Student Noa Halaly (322875832)
+EX: 2
+
+FILES:
+Thread.h -- API of a single Thread object.
+Thread.cpp -- implementation of a single Thread object.
+IDManager.h -- API of an IDManager objects that handles the id assignment to threads.
+IDManager.cpp -- implementation of an IDManager object.
+timer_utils.h -- API of useful methods that helps managing the timer.
+timer_utils.cpp -- implementation of those timer related methods.
+uthread.h -- user-level threads library API given by the HUJI OS course.
+uthread.cpp -- implementation of the uthreads library.
+macros_and_errors.h -- macros and helper methods signatures.
+macros_and_errors.cpp -- helper methods implementation.
+
+REMARKS:
+1. The main file is 'uthread.cpp', and all the others gather specific features and operations related to it to help with
+ organization and readability.
+2. 'Thread' is designed to support Thread as a single data type.
+3. 'IDManager' is designed to handle the task of managing assigning IDs to threads.
+4. 'timer_util' contains methods to support the uthreads timer.
+5. 'macros_and_errors' gathers all the macros of the program, in addition to some typedefs and methods that are being
+ used in many places in the program.
+
+ANSWERS:
+
+Q1:
+siglongjmp and sigsetjmp:
+    a. These two terms refer to functions used in the implementation of user-level threads to enable smooth switching
+    between threads without losing information or requiring duplicated CPU work.
+        1. sigsetjmp: When calling this function within a certain thread, it saves all the variables that are relevant
+        to the current state of the thread and aren’t saved in the shared memory of the process (e.g., the state of the
+         CPU registers at that moment). In the Tirgul, we used the analogy of a bookmark, allowing us to return exactly
+          to the point where we stopped previously. The function returns 0 if we called it directly (placed the
+          bookmark) and a non-zero value if we returned to it to continue the thread (opened the book at the page where
+           the bookmark was left).
+        2. siglongjmp: When calling this function, we are requesting to return to a previously saved thread (the
+        information about that thread is received in a struct passed as a parameter to the function). The function
+        restores all the values of that thread (contained in the struct) to the CPU and continues the thread's
+        execution from the point where we "placed the bookmark" with sigsetjmp.
+    b.	If the function ‘sigsetjmp’ is called for a thread running with masked signals, it will save (among other
+    things) the thread's current list of masked signals. Later, when the function ‘siglongjmp’ will be called to
+    restore the thread, it will also restore the masked signals and continue from that point.
+
+Q2:
+When we started learning about threads, the example of a web server was given in the lecture. Since a web server
+receives requests from many hosts simultaneously, it is beneficial to separate the process into multiple threads, so
+that there is one thread responsible for accepting new hosts requests and additional threads, each handling a different
+connected host. In my opinion, in this example, it’s reasonable to work with user-level threads because:
+    a. The creation of threads and switching between them is very frequent in this example, and using user-level threads
+    would significantly reduce the overhead of these operations and the total time required to perform them.
+    b. The web server can optimize its performance by having full control over the scheduling between the threads.
+
+Q3:
+Creating a new process for each tab instead of using kernel-level threads:
+    a. Advantages:
+        i. Each process is isolated from the others and protected from their undesirable actions and resource usage.
+    b. Disadvantages:
+        i. High overhead – every context switch and inter-process communication goes through the operating system.
+        ii. Inter-process communication is more complex and slower.
+        iii. It takes more time to create a new process compared to a thread.
+
+Q4:
+When executing "kill pid", the following steps are involved:
+    a. When typing the command, interrupts from the keyboard are sent to the CPU. The OS processes them and passes the
+    letters to the shell and the shell displays them.
+    b. Pressing Enter generates another interrupt from the keyboard, which is also sent to the CPU. The OS processes it
+    and passes it to the shell and the shell executes the command.
+    c. After that, the shell sends a system call to the OS requesting to terminate the specified process.
+    d. Finally, the OS sends a signal to this process to terminate it.
+
+Q5:
+9.	Real time refers to the actual elapsed time measured in the world, while virtual time refers to the elapsed time as
+perceived by a particular process or thread. For example, for a certain process, it could run for 3 seconds and after
+that the OS switches to another process that also runs for 3 seconds and then switches back to the first process for
+another 3 seconds. The total elapsed time (real time) is 9 seconds, but the process itself can only notice the 6
+seconds during which it was actually running (virtual time).
