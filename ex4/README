@@ -1,0 +1,8 @@
+noahalaly
+Student Noa Halaly (322875832)
+EX: 4
+
+FILES:
+VirtualMemory.h -- API given by the HUJI OS course.
+VirtualMemory.cpp -- implementation of 'VirtualMemory.h'.
+
